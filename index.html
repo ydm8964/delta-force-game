@@ -1059,6 +1059,41 @@ function spawnLoot(x, z, type) {
   Game.lootItems.push(loot);
 }
 
+function addCharacterDetail(group, palette, role = 'enemy') {
+  const limbMat = new THREE.MeshStandardMaterial({ color: palette.limb, roughness: 0.82, metalness: 0.12 });
+  const armorMat = new THREE.MeshStandardMaterial({ color: palette.armor, roughness: 0.48, metalness: 0.48 });
+  const skinMat = new THREE.MeshStandardMaterial({ color: 0x9b6d50, roughness: 0.9 });
+  const accentMat = new THREE.MeshStandardMaterial({ color: palette.accent, emissive: palette.accent, emissiveIntensity: 0.22, roughness: 0.35, metalness: 0.25 });
+  const limbGeo = new THREE.BoxGeometry(0.22, 0.78, 0.24);
+  const bootGeo = new THREE.BoxGeometry(0.28, 0.18, 0.48);
+  const armGeo = new THREE.BoxGeometry(0.2, 0.78, 0.2);
+  const shoulderGeo = new THREE.SphereGeometry(0.17, 8, 6);
+  const legL = new THREE.Mesh(limbGeo, limbMat), legR = new THREE.Mesh(limbGeo, limbMat);
+  legL.position.set(-0.22, 0.35, 0); legR.position.set(0.22, 0.35, 0);
+  const bootL = new THREE.Mesh(bootGeo, armorMat), bootR = new THREE.Mesh(bootGeo, armorMat);
+  bootL.position.set(-0.22, 0.08, 0.08); bootR.position.set(0.22, 0.08, 0.08);
+  const armL = new THREE.Mesh(armGeo, limbMat), armR = new THREE.Mesh(armGeo, limbMat);
+  armL.position.set(-0.57, 1.02, 0); armR.position.set(0.57, 1.02, 0);
+  armL.rotation.z = -0.12; armR.rotation.z = 0.12;
+  const shoulderL = new THREE.Mesh(shoulderGeo, armorMat), shoulderR = new THREE.Mesh(shoulderGeo, armorMat);
+  shoulderL.position.set(-0.48, 1.45, 0); shoulderR.position.set(0.48, 1.45, 0);
+  const pack = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.72, 0.2), armorMat);
+  pack.position.set(0, 1.1, -0.36);
+  const belt = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.14, 0.62), accentMat);
+  belt.position.y = 0.64;
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.18, 8), skinMat);
+  neck.position.y = 1.62;
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.29, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.62), armorMat);
+  helmet.position.y = 1.98;
+  const helmetBand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.52), accentMat);
+  helmetBand.position.set(0, 1.91, 0.02);
+  [legL, legR, bootL, bootR, armL, armR, shoulderL, shoulderR, pack, belt, neck, helmet, helmetBand].forEach(part => { part.castShadow = true; part.receiveShadow = true; group.add(part); });
+  const tag = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.04), accentMat);
+  tag.position.set(0, 1.2, 0.34);
+  group.add(tag);
+  group.userData.characterRole = role;
+} 
+
 function spawnEnemy(x, z) {
   const group = new THREE.Group();
 
@@ -1113,6 +1148,8 @@ function spawnEnemy(x, z) {
   const visor = new THREE.Mesh(visorGeo, visorMat);
   visor.position.set(0, 1.83, 0.24);
   group.add(visor);
+
+  addCharacterDetail(group, { limb: 0x20262b, armor: 0x3a4147, accent: 0xb52b32 }, 'enemy');
 
   // Weapon
   const gunGeo = new THREE.BoxGeometry(0.12, 0.12, 0.7);
@@ -1177,6 +1214,9 @@ function spawnTeamMate(role) {
   const head = new THREE.Mesh(headGeo, headMat);
   head.position.set(0, 1.75, 0);
   group.add(head);
+  body.visible = false;
+  head.visible = false;
+  addCharacterDetail(group, { limb: 0x26384b, armor: role === 'medic' ? 0x1d6b57 : 0x24528f, accent: role === 'medic' ? 0x00e59a : 0x4aa3ff }, role);
 
   group.position.set(x, 0, z);
   Game.scene.add(group);
