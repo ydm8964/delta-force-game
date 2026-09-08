@@ -611,7 +611,8 @@ const Audio = {
       if (Game.panner) {
         Game.panner.setPosition(0, 0, 0);
         Game.panner.setOrientation(0, 0, -1);
-        Game.audioCtx.listener ? Game.audioCtx.listener.connect(Game.audioCtx.destination) : null;
+        // AudioContext.listener is an AudioListener, not an AudioNode; never connect it.
+        if (Game.audioCtx.state === 'suspended') Game.audioCtx.resume().catch(() => {});
       }
     }
   },
@@ -732,6 +733,7 @@ function createWaterPuddle(x, z) {
 // MISSION GENERATION
 // ====================================================================
 function generateMission(mission) {
+  const floorSize = 180;
   // Dynamic time of day (random per mission for variety)
   const timeOfDay = Math.random();
   mission.timeOfDay = timeOfDay; // 0=night, 0.5=day, 1=night
