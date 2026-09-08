@@ -2606,7 +2606,8 @@ function init() {
     document.getElementById('menu-screen').style.display = 'flex';
     Game.state = 'menu';
   };
-  document.getElementById('btn-deploy').onclick = () => {
+  const deployButton = document.getElementById('btn-deploy');
+  deployButton.onclick = () => {
     try { startMission(); }
     catch (e) { console.error('Deployment failed:', e); notify('部署失败: ' + e.message, 'danger'); }
   };
