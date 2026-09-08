@@ -2709,9 +2709,9 @@ function smoothUpdateHealth() {
 }
 
 // ====================================================================
-// ENHANCED UPDATE LOOP
+// ENHANCED UPDATE LOOP (reference implementation)
 // ====================================================================
-function animate() {
+function animateEnhanced() {
   requestAnimationFrame(animate);
   const dt = Math.min(0.05, Game.clock.getDelta());
 
