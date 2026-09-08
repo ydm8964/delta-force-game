@@ -2883,8 +2883,6 @@ function spawnFireworks(x, y, z) {
   animateFire();
 }
 
-init();
-
 // PWA install
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -2897,15 +2895,16 @@ document.getElementById('pwa-install').onclick = () => {
 };
 document.getElementById('pwa-dismiss').onclick = () => { document.getElementById('pwa-prompt').style.display = 'none'; };
 
-// Loading progress
-const loadingSteps = [
-  { msg: '正在初始化渲染器...', pct: 15 },
-  { msg: '加载三角洲战场数据...', pct: 40 },
-  { msg: '生成任务地图...', pct: 65 },
-  { msg: '初始化装备系统...', pct: 85 },
-  { msg: '系统准备就绪', pct: 100 }
-];
-let step = 0;
+function completeInit() {
+  init();
+  // Hide loading screen when init completes
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) { ls.style.opacity = '0'; ls.style.transition = 'opacity 0.5s'; setTimeout(() => ls.style.display = 'none', 500); }
+  }, 200);
+}
+
+// Start loading simulation immediately (before init)
 const progressInterval = setInterval(() => {
   if (step < loadingSteps.length) {
     document.getElementById('loading-bar').style.width = loadingSteps[step].pct + '%';
@@ -2913,9 +2912,16 @@ const progressInterval = setInterval(() => {
     step++;
   } else {
     clearInterval(progressInterval);
-    setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; }, 500);
+    setTimeout(() => completeInit(), 300);
   }
 }, 400);
+
+// If page is already loaded, start immediately
+if (document.readyState === 'complete') {
+  // Let interval handle it naturally
+} else {
+  window.addEventListener('load', () => {}); // interval already started
+}
 
 </script>
 
