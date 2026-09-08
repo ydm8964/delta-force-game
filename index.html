@@ -2942,25 +2942,13 @@ const progressInterval = setInterval(() => {
     document.getElementById('loading-bar').style.width = loadingSteps[step].pct + '%';
     document.getElementById('loading-text').textContent = loadingSteps[step].msg;
     step++;
-  } else {
-    clearInterval(progressInterval);
-    setTimeout(() => completeInit(), 200);
-  }
-}, 400);
+      } else {
+        clearInterval(progressInterval);
+        setTimeout(() => completeInit(), 200);
+      }
+    }
+  }, 400);
 
 </script>
-
 </body>
 </html>
-
-<!-- ===== FINAL VISUAL ENHANCEMENTS (APPENDED) ===== -->
-<script>
-// Screen-space ambient occlusion approximation
-function applySSAOApprox() {
-  const canvas = document.getElementById('game-canvas');
-  // Subtle vignette overlay via canvas 2D
-  const ctx = document.createElement('canvas').getContext('2d');
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-}
-</script>
