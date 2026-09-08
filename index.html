@@ -2904,6 +2904,9 @@ function completeInit() {
   }, 200);
 }
 
+// Loading state
+let step = 0;
+
 // Start loading simulation immediately (before init)
 const progressInterval = setInterval(() => {
   if (step < loadingSteps.length) {
