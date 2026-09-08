@@ -2301,7 +2301,9 @@ function showSkillTreeModal() {
   renderSkills();
 }
 function showShopModal() {
-  document.getElementById('shop-screen').style.display = 'block';
+  const modal = document.getElementById('shop-screen');
+  if (!modal) return;
+  modal.style.display = 'block';
   renderShopModal();
 }
 function closeModals() {
@@ -2360,10 +2362,10 @@ function renderLoadout() {
 }
 
 function startMission() {
-  if (!Game.selectedMission || !Game.selectedWeapon || !Game.selectedArmor) {
-    notify('请选择任务、武器和护甲!', 'warning');
-    return;
-  }
+  // Always provide safe defaults so deployment cannot silently no-op.
+  if (!Game.selectedMission) Game.selectedMission = MISSIONS[0];
+  if (!Game.selectedWeapon) Game.selectedWeapon = 'pistol';
+  if (!Game.selectedArmor) Game.selectedArmor = 'light';
   const w = WEAPONS[Game.selectedWeapon];
   const a = ARMORS[Game.selectedArmor];
   if (w.price > 0 && !playerProfile.unlocked.weapons.includes(Game.selectedWeapon)) {
@@ -2642,6 +2644,9 @@ function init() {
   };
 
   animate();
+  Game.state = 'menu';
+  document.getElementById('menu-screen').style.display = 'flex';
+  document.getElementById('loadout-screen').style.display = 'none';
 
   // Show canvas
   Game.renderer.render(new THREE.Scene(), Game.camera);
