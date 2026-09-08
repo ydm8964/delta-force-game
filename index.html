@@ -383,7 +383,7 @@
 </script>
 
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 // ====================================================================
 // OBJECT POOL
@@ -2896,6 +2896,9 @@ function spawnFireworks(x, y, z) {
 }
 
 // PWA install
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW disabled:', err)));
+}
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
