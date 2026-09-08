@@ -2929,25 +2929,6 @@ const progressInterval = setInterval(() => {
   }
 }, 400);
 
-// Start loading simulation immediately (before init)
-const progressInterval = setInterval(() => {
-  if (step < loadingSteps.length) {
-    document.getElementById('loading-bar').style.width = loadingSteps[step].pct + '%';
-    document.getElementById('loading-text').textContent = loadingSteps[step].msg;
-    step++;
-  } else {
-    clearInterval(progressInterval);
-    setTimeout(() => completeInit(), 300);
-  }
-}, 400);
-
-// If page is already loaded, start immediately
-if (document.readyState === 'complete') {
-  // Let interval handle it naturally
-} else {
-  window.addEventListener('load', () => {}); // interval already started
-}
-
 </script>
 
 </body>
