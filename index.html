@@ -296,6 +296,7 @@
     <div class="extraction-timer" id="extraction-timer"></div>
   </div>
   <div class="hud-bottom-left">
+    <div id="stamina-readout" class="stat-text" style="color:#ffd166">体力: 100%</div>
     <div class="health-bar"><div class="health-fill" id="health-fill" style="width:100%"></div><div class="bar-text" id="health-text">100 / 100</div></div>
     <div class="armor-bar"><div class="armor-fill" id="armor-fill" style="width:100%"></div><div class="bar-text" id="armor-text">100 / 100</div></div>
     <div class="stat-text">击杀: <span class="val" id="kill-count">0</span></div>
@@ -1403,6 +1404,8 @@ function initPlayer() {
     sprintMult: 1.5,
     velocityY: 0,
     grounded: true,
+    stamina: 100,
+    maxStamina: 100,
     weapon: { ...weapon },
     ammo: weapon.magSize,
     reserve: weapon.reserve,
@@ -1565,7 +1568,10 @@ function updatePlayer(dt) {
   const len = Math.hypot(mx, mz);
   if (len > 0) {
     mx /= len; mz /= len;
-    const sprint = (Game.keys['ShiftLeft'] || Game.keys['ShiftRight']) ? p.sprintMult : 1;
+    const sprinting = (Game.keys['ShiftLeft'] || Game.keys['ShiftRight']) && p.stamina > 0;
+    const sprint = sprinting ? p.sprintMult : 1;
+    if (sprinting) p.stamina = Math.max(0, p.stamina - 28 * dt);
+    else p.stamina = Math.min(p.maxStamina, p.stamina + 18 * dt);
     tryMove(mx * p.speed * sprint * dt, mz * p.speed * sprint * dt);
   }
 
@@ -1991,6 +1997,12 @@ function collectLoot(l) {
 
 function tryExtraction() {
   const p = Game.player;
+  const required = Game.selectedMission.id === 'warehouse' ? 2 : (Game.selectedMission.id === 'city' ? 3 : 2);
+  const completed = Game.selectedMission.completedObjectives || 0;
+  if (completed < required) {
+    notify(`目标未完成: 还需 ${required - completed} 件关键情报`, 'warning');
+    return;
+  }
   for (const ex of Game.extractionZones) {
     const d = Math.hypot(ex.x - p.x, ex.z - p.z);
     if (d < 6 && !ex.active) {
@@ -2046,7 +2058,8 @@ function onExtractionSuccess() {
     `击杀敌人: <span class="val">${Game.killCount}</span><br>` +
     `拾取物资: <span class="val">$${loot}</span><br>` +
     `击杀奖励: <span class="val">$${killBonus}</span><br>` +
-    `任务奖励: <span class="val">$${missionReward}</span>`;
+    `任务奖励: <span class="val">$${missionReward}</span><br>` +
+     `撤离状态: <span class="val">关键情报已带出</span>`;
   document.getElementById('end-loot').textContent = `+ $${totalEarn}`;
   document.getElementById('end-screen').classList.add('open');
   // Victory fireworks
@@ -2510,6 +2523,8 @@ function animate() {
     updateExtraction(dt);
     updateObjectPools(dt);
     updateInteractionPrompt();
+    const staminaEl = document.getElementById('stamina-readout');
+    if (staminaEl && Game.player) staminaEl.textContent = `体力: ${Math.round(Game.player.stamina)}%`;
     updateBGM(dt);
     updateShake();
     smoothUpdateHealth();
