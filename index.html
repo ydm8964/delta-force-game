@@ -2604,7 +2604,14 @@ function init() {
     document.getElementById('menu-screen').style.display = 'flex';
     Game.state = 'menu';
   };
-  document.getElementById('btn-deploy').onclick = startMission;
+  document.getElementById('btn-deploy').onclick = () => {
+    try { startMission(); }
+    catch (e) { console.error('Deployment failed:', e); notify('部署失败: ' + e.message, 'danger'); }
+  };
+  document.getElementById('btn-open-shop').onclick = () => {
+    try { showShopModal(); }
+    catch (e) { console.error('Shop failed:', e); notify('商店加载失败: ' + e.message, 'danger'); }
+  };
   document.getElementById('btn-resume').onclick = togglePause;
   document.getElementById('btn-quit').onclick = () => {
     document.getElementById('pause-screen').classList.remove('open');
