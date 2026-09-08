@@ -2896,12 +2896,26 @@ document.getElementById('pwa-install').onclick = () => {
 document.getElementById('pwa-dismiss').onclick = () => { document.getElementById('pwa-prompt').style.display = 'none'; };
 
 function completeInit() {
-  init();
-  // Hide loading screen when init completes
+  try {
+    init();
+  } catch (e) {
+    console.error('Init failed:', e);
+    // Show error message
+    const loadingText = document.getElementById('loading-text');
+    if (loadingText) {
+      loadingText.textContent = '初始化失败: ' + e.message;
+      loadingText.style.color = '#ff4444';
+    }
+  }
+  // Always hide loading screen after a delay
   setTimeout(() => {
     const ls = document.getElementById('loading-screen');
-    if (ls) { ls.style.opacity = '0'; ls.style.transition = 'opacity 0.5s'; setTimeout(() => ls.style.display = 'none', 500); }
-  }, 200);
+    if (ls) { 
+      ls.style.opacity = '0'; 
+      ls.style.transition = 'opacity 0.5s'; 
+      setTimeout(() => { ls.style.display = 'none'; }, 500); 
+    }
+  }, 500);
 }
 
 // Loading state
