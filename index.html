@@ -2907,15 +2907,20 @@ function completeInit() {
       loadingText.style.color = '#ff4444';
     }
   }
-  // Always hide loading screen after a delay
+  // Always hide loading screen after delay
   setTimeout(() => {
     const ls = document.getElementById('loading-screen');
     if (ls) { 
       ls.style.opacity = '0'; 
-      ls.style.transition = 'opacity 0.5s'; 
-      setTimeout(() => { ls.style.display = 'none'; }, 500); 
+      ls.style.transition = 'opacity 0.3s'; 
+      setTimeout(() => { ls.style.display = 'none'; }, 300); 
     }
   }, 500);
+  // Fallback: force hide after 5 seconds regardless
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) ls.style.display = 'none';
+  }, 5000);
 }
 
 // Loading state
@@ -2936,10 +2941,7 @@ const progressInterval = setInterval(() => {
     step++;
   } else {
     clearInterval(progressInterval);
-    setTimeout(() => {
-      completeInit();
-      setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; }, 300);
-    }, 300);
+    setTimeout(() => completeInit(), 200);
   }
 }, 400);
 
