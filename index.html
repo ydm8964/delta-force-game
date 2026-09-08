@@ -2906,6 +2906,28 @@ function completeInit() {
 
 // Loading state
 let step = 0;
+const loadingSteps = [
+  { msg: '正在初始化渲染器...', pct: 15 },
+  { msg: '加载三角洲战场数据...', pct: 40 },
+  { msg: '生成任务地图...', pct: 65 },
+  { msg: '初始化装备系统...', pct: 85 },
+  { msg: '系统准备就绪', pct: 100 }
+];
+
+// Start loading simulation immediately (before init)
+const progressInterval = setInterval(() => {
+  if (step < loadingSteps.length) {
+    document.getElementById('loading-bar').style.width = loadingSteps[step].pct + '%';
+    document.getElementById('loading-text').textContent = loadingSteps[step].msg;
+    step++;
+  } else {
+    clearInterval(progressInterval);
+    setTimeout(() => {
+      completeInit();
+      setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; }, 300);
+    }, 300);
+  }
+}, 400);
 
 // Start loading simulation immediately (before init)
 const progressInterval = setInterval(() => {
