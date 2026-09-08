@@ -2362,6 +2362,7 @@ function renderLoadout() {
 }
 
 function startMission() {
+  console.log('[Delta] deployment requested', Game.state);
   // Always provide safe defaults so deployment cannot silently no-op.
   if (!Game.selectedMission) Game.selectedMission = MISSIONS[0];
   if (!Game.selectedWeapon) Game.selectedWeapon = 'pistol';
@@ -2945,6 +2946,22 @@ function completeInit() {
     if (ls) ls.style.display = 'none';
   }, 5000);
 }
+
+// Defensive global controls: these remain usable even if optional init wiring fails.
+window.__deltaStartMission = startMission;
+window.__deltaShowShop = showShopModal;
+document.addEventListener('click', (event) => {
+  const target = event.target.closest && event.target.closest('#btn-deploy, #btn-open-shop');
+  if (!target) return;
+  try {
+    if (target.id === 'btn-deploy') startMission();
+    if (target.id === 'btn-open-shop') showShopModal();
+  } catch (error) {
+    console.error('Control action failed:', error);
+    const text = document.getElementById('loading-text');
+    if (text) text.textContent = '操作失败: ' + error.message;
+  }
+});
 
 // Loading state
 let step = 0;
